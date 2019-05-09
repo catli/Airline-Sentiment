@@ -56,14 +56,16 @@ def compileModel(padded_sequence, labels, tokenizer, embedding_matrix):
                                 trainable=False)
     sequence_input = Input(shape=(max_sequence_length,), dtype='int32')
     embedded_sequences = embedding_layer(sequence_input)
-    x = LSTM(128, dropout=0.2,
-        recurrent_dropout=0.2, return_sequences = False)(embedded_sequences)
-    x = Dropout(0.5)(x)
-    # x = Conv1D(50, 5, activation = 'relu')(embedded_sequences)
-    # x = MaxPooling1D(5)(x)
+    # x = LSTM(128, dropout=0.2,
+    #     recurrent_dropout=0.2, return_sequences = False)(embedded_sequences)
     # x = Dropout(0.5)(x)
-    # x = Flatten()(x)
-    x = Dense(5, activation='relu')(x)
+    x = Conv1D(300, 3, activation = 'relu')(embedded_sequences)
+    x = MaxPooling1D(3)(x)
+    x = Conv1D(300, 3, activation = 'relu')(embedded_sequences)
+    x = MaxPooling1D(3)(x)
+    x = Flatten()(x)
+    x = Dropout(0.5)(x)
+    x = Dense(300, activation='relu')(x)
     preds = Dense( labels.shape[1], activation='softmax')(x)
 
     model = Model(sequence_input, preds)
