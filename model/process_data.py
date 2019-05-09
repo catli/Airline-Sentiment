@@ -28,7 +28,7 @@ class ProcessData:
                 (2) tokenize words into integers, store index in tokenizer
                 (3) create one hot vector for data label
         '''
-        # uncomment to include stop words
+        # uncomment to include stop num_words
         # self.removeStopWords()
         padded_sequence, tokenizer = self.createTokenizeData()
         labels = self.createDataLabel()
@@ -141,18 +141,29 @@ def testStopWords():
     print('PASS PUNCTUATION AND STOP WORD REMOVAL!')
 
 
-# [TODO] write unit test to ensure toeknization working
+def testTokenizeWords():
+    '''
+        Unit test fasttext embedding class and functions
+    '''
+    df = pd.DataFrame({'text': ['Perhaps, we are all pig .',
+            'I have nowhere! ;']})
+    process = ProcessData(df)
+    padded_sequence, tokenizer = process.createTokenizeData()
+    ft = createFTEmbedding()
+    ft.processDict(tokenizer)
+    # check that for num_words = number of distinct words in data
+    # and embed_dim = embedding size of the pretrained embeddings
+    # matrix has dimension (num_words+1, embed_dim)
+    assert ft.embedding_matrix.shape[0] == 9
+    assert ft.embedding_matrix.shape[1] == 300
+    print('PASS EMBEDDING MATRIX!')
+
 
 # Class create embedding matrix from fasttext
 
 if __name__ == "__main__":
     testStopWords()
-    sentdata = pd.read_csv('data/train.csv')
-    process = ProcessData(sentdata)
-    padded_sequence, tokenizer = process.createTokenizeData()
-    ft = createFTEmbedding()
-    ft.processDict(tokenizer)
-    embedding_matrix = ft.embedding_matrix
+    testTokenizeWords()
 
 
 

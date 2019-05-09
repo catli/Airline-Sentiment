@@ -15,6 +15,11 @@ import pdb
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 def trainPredModel(data):
+    '''
+        Split dataset to training and evaluation (20% evaluation split)
+        Fit model to training data, and generate a doc with evaluation
+        as well as the summary of errors
+    '''
     process = ProcessData(sentdata)
     padded_sequence, tokenizer, labels = process.createTrainData()
 
@@ -51,14 +56,13 @@ def compileModel(padded_sequence, labels, tokenizer, embedding_matrix):
                                 trainable=False)
     sequence_input = Input(shape=(max_sequence_length,), dtype='int32')
     embedded_sequences = embedding_layer(sequence_input)
-    # x = LSTM(128, dropout=0.2,
-    #     recurrent_dropout=0.2, return_sequences = False)(embedded_sequences)
-    # x = Dropout(0.5)(x)
-    x = Conv1D(50, 5, activation = 'relu')(embedded_sequences)
-    x = MaxPooling1D(5)(x)
+    x = LSTM(128, dropout=0.2,
+        recurrent_dropout=0.2, return_sequences = False)(embedded_sequences)
     x = Dropout(0.5)(x)
-    x = Flatten()(x)
-    # Interestingly, adding additional LSTM layer does not seem to help with 
+    # x = Conv1D(50, 5, activation = 'relu')(embedded_sequences)
+    # x = MaxPooling1D(5)(x)
+    # x = Dropout(0.5)(x)
+    # x = Flatten()(x)
     x = Dense(5, activation='relu')(x)
     preds = Dense( labels.shape[1], activation='softmax')(x)
 
